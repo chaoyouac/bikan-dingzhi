@@ -430,23 +430,9 @@ var Drawing = (function() {
         ctx.lineWidth = isSurface ? 3 : 1.5;
         ctx.strokeRect(tx(0), ty(h / 2), sv(d), sv(h));
 
-        // 明装壁龛的外框（侧视图）
-        if (isSurface) {
-            ctx.fillStyle = COLORS.frameFill;
-            ctx.strokeStyle = COLORS.frame;
-            ctx.lineWidth = 1.5;
-            ctx.fillRect(tx(0), ty(h / 2 + fsTop), sv(wallThick), sv(fsTop));
-            ctx.strokeRect(tx(0), ty(h / 2 + fsTop), sv(wallThick), sv(fsTop));
-            ctx.fillRect(tx(0), ty(h / 2 + fsTop), sv(fdTop), sv(wallThick));
-            ctx.strokeRect(tx(0), ty(h / 2 + fsTop), sv(fdTop), sv(wallThick));
-
-            ctx.fillStyle = COLORS.frameFill;
-            ctx.strokeStyle = COLORS.frame;
-            ctx.fillRect(tx(0), ty(-h / 2), sv(wallThick), sv(fsBottom));
-            ctx.strokeRect(tx(0), ty(-h / 2), sv(wallThick), sv(fsBottom));
-            ctx.fillRect(tx(0), ty(-h / 2 - fsBottom + wallThick), sv(fdBottom), sv(wallThick));
-            ctx.strokeRect(tx(0), ty(-h / 2 - fsBottom + wallThick), sv(fdBottom), sv(wallThick));
-        } else if (fs > 0) {
+        // 明装壁龛的侧视图不显示外框
+        // 嵌入式壁龛的侧视图显示外框
+        if (!isSurface && fs > 0) {
             ctx.fillStyle = COLORS.frameFill;
             ctx.strokeStyle = COLORS.frame;
             ctx.lineWidth = 1.5;
