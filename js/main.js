@@ -7,6 +7,10 @@
     // 记录用户手动修改过的层索引 (1-based)
     var manuallyEditedLayers = {};
 
+    // 开孔数据存储
+    var holes = [];
+    var MAX_HOLES = 10;
+
     var tabState = {
         embedded: {
             width: 300, depth: 125, totalHeight: 900, layers: 3, layerThickness: 10,
@@ -15,7 +19,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 5, outerFrameBottomDepth: 5, outerFrameLeftDepth: 5, outerFrameRightDepth: 5,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数3',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         },
         surface: {
@@ -25,7 +29,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数3',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         }
     };
@@ -190,7 +194,8 @@
             showColor: document.getElementById('showColor').checked,
             showHasLight: document.getElementById('showHasLight').checked,
             showDate: document.getElementById('showDate').checked,
-            showRemark: document.getElementById('showRemark').checked
+            showRemark: document.getElementById('showRemark').checked,
+            holes: holes
         };
     }
 
@@ -389,6 +394,73 @@
         }
     }
 
+    // 开孔功能
+    function updateHoleTypeVisibility() {
+        var holeType = document.getElementById('holeType').value;
+        var circleInputs = document.querySelectorAll('.hole-size-circle');
+        var rectInputs = document.querySelectorAll('.hole-size-rect');
+        if (holeType === 'circle') {
+            circleInputs.forEach(function(el) { el.style.display = 'flex'; });
+            rectInputs.forEach(function(el) { el.style.display = 'none'; });
+        } else {
+            circleInputs.forEach(function(el) { el.style.display = 'none'; });
+            rectInputs.forEach(function(el) { el.style.display = 'flex'; });
+        }
+    }
+
+    function updateHoleList() {
+        var list = document.getElementById('holeList');
+        var count = document.getElementById('holeCount');
+        list.innerHTML = '';
+        count.textContent = '(' + holes.length + '/' + MAX_HOLES + ')';
+        
+        holes.forEach(function(hole, index) {
+            var item = document.createElement('div');
+            item.className = 'hole-item';
+            var sizeText = hole.type === 'circle' 
+                ? '直径' + hole.diameter + 'mm' 
+                : '长' + hole.length + 'x宽' + hole.width + 'mm';
+            var posNames = { back: '背面', top: '上面', bottom: '下面', left: '左面', right: '右面' };
+            item.innerHTML = '<span class="hole-info">' + (index + 1) + '. ' + posNames[hole.position] + ' ' + sizeText + ' (X:' + hole.offsetX + ',Y:' + hole.offsetY + ')</span><span class="hole-delete" data-index="' + index + '">×</span>';
+            list.appendChild(item);
+        });
+
+        // 绑定删除事件
+        list.querySelectorAll('.hole-delete').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var idx = parseInt(this.getAttribute('data-index'));
+                holes.splice(idx, 1);
+                updateHoleList();
+                updateAll();
+            });
+        });
+    }
+
+    document.getElementById('holeType').addEventListener('change', updateHoleTypeVisibility);
+
+    document.getElementById('addHoleBtn').addEventListener('click', function() {
+        if (holes.length >= MAX_HOLES) {
+            alert('最多只能添加' + MAX_HOLES + '个孔');
+            return;
+        }
+        var holeType = document.getElementById('holeType').value;
+        var hole = {
+            position: document.getElementById('holePosition').value,
+            type: holeType,
+            offsetX: parseInt(document.getElementById('holeOffsetX').value) || 0,
+            offsetY: parseInt(document.getElementById('holeOffsetY').value) || 0
+        };
+        if (holeType === 'circle') {
+            hole.diameter = parseInt(document.getElementById('holeDiameter').value) || 50;
+        } else {
+            hole.length = parseInt(document.getElementById('holeLength').value) || 50;
+            hole.width = parseInt(document.getElementById('holeWidth').value) || 30;
+        }
+        holes.push(hole);
+        updateHoleList();
+        updateAll();
+    });
+
     document.getElementById('exportBtn').addEventListener('click', function() {
         window.exportDrawings();
     });
@@ -401,7 +473,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 5, outerFrameBottomDepth: 5, outerFrameLeftDepth: 5, outerFrameRightDepth: 5,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数3',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         };
         tabState.surface = {
@@ -411,9 +483,11 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数3',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         };
+        holes = [];
+        updateHoleList();
         document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
         document.querySelector('.tab-btn[data-tab="embedded"]').classList.add('active');
         currentTab = 'embedded';
