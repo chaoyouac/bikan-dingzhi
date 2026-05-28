@@ -102,7 +102,8 @@ var Model3D = (function() {
 
         var outerW = iw + fsLeft + fsRight;
         var outerH = ih + fsTop + fsBottom;
-        var innerWallThick = 2;
+        // 明装壁龛的墙壁厚度为10MM，嵌入式为2MM
+        var innerWallThick = isSurface ? 10 : 2;
 
         var cc = COLORS[this.currentColor] || COLORS.matteBlack;
         var mainMat = new THREE.MeshStandardMaterial({ color: cc.color, roughness: cc.roughness, metalness: cc.metalness });
