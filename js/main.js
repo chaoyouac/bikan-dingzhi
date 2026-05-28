@@ -15,7 +15,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 5, outerFrameBottomDepth: 5, outerFrameLeftDepth: 5, outerFrameRightDepth: 5,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         },
         surface: {
@@ -25,7 +25,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         }
     };
@@ -126,9 +126,17 @@
     });
 
     function updateOuterFrameVisibility() {
+        // 明装壁龛模式下隐藏所有外框相关输入框
         var outerInputs = document.querySelectorAll('.outer-frame-inputs');
+        if (currentTab === 'surface') {
+            outerInputs.forEach(function(el) {
+                el.style.display = 'none';
+            });
+            return;
+        }
+        // 嵌入式壁龛模式下显示外框输入框
         outerInputs.forEach(function(el) {
-            el.style.display = currentTab === 'embedded' ? 'flex' : 'none';
+            el.style.display = 'flex';
         });
         var uniformInputs = document.querySelectorAll('.uniform-frame-inputs');
         var separateInputs = document.querySelectorAll('.separate-frame-inputs');
@@ -393,7 +401,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 5, outerFrameBottomDepth: 5, outerFrameLeftDepth: 5, outerFrameRightDepth: 5,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         };
         tabState.surface = {
@@ -403,7 +411,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数2',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         };
         document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
