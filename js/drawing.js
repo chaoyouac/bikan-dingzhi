@@ -220,6 +220,31 @@ var Drawing = (function() {
             }
         }
 
+        // 绘制孔洞（正面视图只显示背面的孔）
+        if (params.holes && params.holes.length > 0) {
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            params.holes.forEach(function(hole) {
+                if (hole.position === 'back') {
+                    var holeX = innerX + hole.offsetX;
+                    var holeY = innerY - hole.offsetY;
+                    if (hole.type === 'circle') {
+                        var radius = hole.diameter / 2;
+                        ctx.beginPath();
+                        ctx.arc(tx(holeX), ty(holeY), sv(radius), 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                    } else {
+                        var hw = hole.length / 2;
+                        var hh = hole.width / 2;
+                        ctx.fillRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                        ctx.strokeRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                    }
+                }
+            });
+        }
+
         var dimOff = 35 * PIXELS_PER_MM;
 
         ctx.strokeStyle = '#cc3333';
@@ -500,6 +525,43 @@ var Drawing = (function() {
             ctx.font = 'bold ' + fontSize + 'px "Microsoft YaHei", sans-serif';
             ctx.fillText(fsTop, 0, 0);
             ctx.restore();
+        }
+
+        // 绘制孔洞（侧面视图显示上面、下面、左面、右面的孔）
+        if (params.holes && params.holes.length > 0) {
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            params.holes.forEach(function(hole) {
+                var holeX, holeY;
+                if (hole.position === 'top' || hole.position === 'bottom' || hole.position === 'left' || hole.position === 'right') {
+                    if (hole.position === 'top') {
+                        holeX = hole.offsetX;
+                        holeY = h / 2 - hole.offsetY;
+                    } else if (hole.position === 'bottom') {
+                        holeX = hole.offsetX;
+                        holeY = -h / 2 + hole.offsetY;
+                    } else if (hole.position === 'left') {
+                        holeX = hole.offsetX;
+                        holeY = h / 2 - hole.offsetY;
+                    } else if (hole.position === 'right') {
+                        holeX = d - hole.offsetX;
+                        holeY = h / 2 - hole.offsetY;
+                    }
+                    if (hole.type === 'circle') {
+                        var radius = hole.diameter / 2;
+                        ctx.beginPath();
+                        ctx.arc(tx(holeX), ty(holeY), sv(radius), 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                    } else {
+                        var hw = hole.length / 2;
+                        var hh = hole.width / 2;
+                        ctx.fillRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                        ctx.strokeRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                    }
+                }
+            });
         }
 
         var midY = ty(0);
