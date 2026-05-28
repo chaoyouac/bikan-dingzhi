@@ -15,7 +15,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 5, outerFrameBottomDepth: 5, outerFrameLeftDepth: 5, outerFrameRightDepth: 5,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         },
         surface: {
@@ -25,7 +25,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         }
     };
@@ -393,7 +393,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 5, outerFrameBottomDepth: 5, outerFrameLeftDepth: 5, outerFrameRightDepth: 5,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         };
         tabState.surface = {
@@ -403,7 +403,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数1',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         };
         document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
