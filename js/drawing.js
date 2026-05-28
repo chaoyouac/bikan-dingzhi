@@ -220,27 +220,63 @@ var Drawing = (function() {
             }
         }
 
-        // 绘制孔洞（正面视图只显示背面的孔）
+        // 绘制孔洞（正面视图只显示背面的孔）- 挖掉效果
         if (params.holes && params.holes.length > 0) {
-            ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 2;
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
             params.holes.forEach(function(hole) {
                 if (hole.position === 'back') {
-                    var holeX = innerX + hole.offsetX;
-                    var holeY = innerY - hole.offsetY;
+                    var holeX = innerX + (hole.offsetX || 0);
+                    var holeY = innerY - (hole.offsetY || 0);
+                    
+                    // 使用destination-out挖掉背景
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-out';
                     if (hole.type === 'circle') {
-                        var radius = hole.diameter / 2;
+                        var radius = (hole.diameter || 50) / 2;
                         ctx.beginPath();
                         ctx.arc(tx(holeX), ty(holeY), sv(radius), 0, Math.PI * 2);
                         ctx.fill();
+                    } else {
+                        var hw = (hole.length || 50) / 2;
+                        var hh = (hole.width || 30) / 2;
+                        ctx.fillRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                    }
+                    ctx.restore();
+                    
+                    // 黑色描边
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 1.5;
+                    if (hole.type === 'circle') {
+                        var radius = (hole.diameter || 50) / 2;
+                        ctx.beginPath();
+                        ctx.arc(tx(holeX), ty(holeY), sv(radius), 0, Math.PI * 2);
                         ctx.stroke();
                     } else {
-                        var hw = hole.length / 2;
-                        var hh = hole.width / 2;
-                        ctx.fillRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                        var hw = (hole.length || 50) / 2;
+                        var hh = (hole.width || 30) / 2;
                         ctx.strokeRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
                     }
+                    
+                    // 虚线线标
+                    ctx.save();
+                    ctx.strokeStyle = '#666666';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([4, 4]);
+                    
+                    // X方向线标
+                    var dimY = ty(holeY) + sv((hole.type === 'circle' ? (hole.diameter || 50) : (hole.width || 30)) / 2) + 15;
+                    ctx.beginPath();
+                    ctx.moveTo(tx(innerX), dimY);
+                    ctx.lineTo(tx(holeX), dimY);
+                    ctx.stroke();
+                    
+                    // Y方向线标
+                    var dimX = tx(holeX) + sv((hole.type === 'circle' ? (hole.diameter || 50) : (hole.length || 50)) / 2) + 15;
+                    ctx.beginPath();
+                    ctx.moveTo(dimX, ty(innerY));
+                    ctx.lineTo(dimX, ty(holeY));
+                    ctx.stroke();
+                    
+                    ctx.restore();
                 }
             });
         }
@@ -527,39 +563,75 @@ var Drawing = (function() {
             ctx.restore();
         }
 
-        // 绘制孔洞（侧面视图显示上面、下面、左面、右面的孔）
+        // 绘制孔洞（侧面视图显示上面、下面、左面、右面的孔）- 挖掉效果
         if (params.holes && params.holes.length > 0) {
-            ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 2;
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
             params.holes.forEach(function(hole) {
                 var holeX, holeY;
                 if (hole.position === 'top' || hole.position === 'bottom' || hole.position === 'left' || hole.position === 'right') {
                     if (hole.position === 'top') {
-                        holeX = hole.offsetX;
-                        holeY = h / 2 - hole.offsetY;
+                        holeX = hole.offsetX || 0;
+                        holeY = h / 2 - (hole.offsetY || 0);
                     } else if (hole.position === 'bottom') {
-                        holeX = hole.offsetX;
-                        holeY = -h / 2 + hole.offsetY;
+                        holeX = hole.offsetX || 0;
+                        holeY = -h / 2 + (hole.offsetY || 0);
                     } else if (hole.position === 'left') {
-                        holeX = hole.offsetX;
-                        holeY = h / 2 - hole.offsetY;
+                        holeX = hole.offsetX || 0;
+                        holeY = h / 2 - (hole.offsetY || 0);
                     } else if (hole.position === 'right') {
-                        holeX = d - hole.offsetX;
-                        holeY = h / 2 - hole.offsetY;
+                        holeX = d - (hole.offsetX || 0);
+                        holeY = h / 2 - (hole.offsetY || 0);
                     }
+                    
+                    // 使用destination-out挖掉背景
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-out';
                     if (hole.type === 'circle') {
-                        var radius = hole.diameter / 2;
+                        var radius = (hole.diameter || 50) / 2;
                         ctx.beginPath();
                         ctx.arc(tx(holeX), ty(holeY), sv(radius), 0, Math.PI * 2);
                         ctx.fill();
+                    } else {
+                        var hw = (hole.length || 50) / 2;
+                        var hh = (hole.width || 30) / 2;
+                        ctx.fillRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                    }
+                    ctx.restore();
+                    
+                    // 黑色描边
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 1.5;
+                    if (hole.type === 'circle') {
+                        var radius = (hole.diameter || 50) / 2;
+                        ctx.beginPath();
+                        ctx.arc(tx(holeX), ty(holeY), sv(radius), 0, Math.PI * 2);
                         ctx.stroke();
                     } else {
-                        var hw = hole.length / 2;
-                        var hh = hole.width / 2;
-                        ctx.fillRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
+                        var hw = (hole.length || 50) / 2;
+                        var hh = (hole.width || 30) / 2;
                         ctx.strokeRect(tx(holeX - hw), ty(holeY + hh), sv(hole.length), sv(hole.width));
                     }
+                    
+                    // 虚线线标
+                    ctx.save();
+                    ctx.strokeStyle = '#666666';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([4, 4]);
+                    
+                    // X方向线标
+                    var dimY = ty(holeY) + sv((hole.type === 'circle' ? (hole.diameter || 50) : (hole.width || 30)) / 2) + 15;
+                    ctx.beginPath();
+                    ctx.moveTo(tx(0), dimY);
+                    ctx.lineTo(tx(holeX), dimY);
+                    ctx.stroke();
+                    
+                    // Y方向线标
+                    var dimX = tx(holeX) + sv((hole.type === 'circle' ? (hole.diameter || 50) : (hole.length || 50)) / 2) + 15;
+                    ctx.beginPath();
+                    ctx.moveTo(dimX, ty(h / 2));
+                    ctx.lineTo(dimX, ty(holeY));
+                    ctx.stroke();
+                    
+                    ctx.restore();
                 }
             });
         }
