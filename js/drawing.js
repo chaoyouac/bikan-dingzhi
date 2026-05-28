@@ -142,30 +142,45 @@ var Drawing = (function() {
         function ty(y) { return offsetY + (outerH / 2 - y) * PIXELS_PER_MM; }
         function sv(v) { return v * PIXELS_PER_MM; }
 
-        if (fs > 0) {
+        if (!isSurface) {
             ctx.fillStyle = 'rgba(26, 26, 26, 0.15)';
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 3;
-
+            // 先绘制填充
             // Top border
             ctx.fillRect(tx(-outerW / 2), ty(outerH / 2), sv(outerW), sv(fsTop));
-            ctx.strokeRect(tx(-outerW / 2), ty(outerH / 2), sv(outerW), sv(fsTop));
-
             // Bottom border
             ctx.fillRect(tx(-outerW / 2), ty(-outerH / 2 + fsBottom), sv(outerW), sv(fsBottom));
-            ctx.strokeRect(tx(-outerW / 2), ty(-outerH / 2 + fsBottom), sv(outerW), sv(fsBottom));
-
-            // Left border (height excludes top and bottom borders)
+            // Left border
             ctx.fillRect(tx(-outerW / 2), ty(outerH / 2 - fsTop), sv(fsLeft), sv(outerH - fsTop - fsBottom));
-            ctx.strokeRect(tx(-outerW / 2), ty(outerH / 2 - fsTop), sv(fsLeft), sv(outerH - fsTop - fsBottom));
-
             // Right border
             ctx.fillRect(tx(outerW / 2 - fsRight), ty(outerH / 2 - fsTop), sv(fsRight), sv(outerH - fsTop - fsBottom));
-            ctx.strokeRect(tx(outerW / 2 - fsRight), ty(outerH / 2 - fsTop), sv(fsRight), sv(outerH - fsTop - fsBottom));
+            
+            // 最后绘制一个完整的外框线条
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(tx(-outerW / 2), ty(outerH / 2), sv(outerW), sv(outerH));
         }
 
         var innerX = -outerW / 2 + fsLeft;
         var innerY = outerH / 2 - fsTop;
+
+        // 明装壁龛的外框
+        if (isSurface) {
+            ctx.fillStyle = 'rgba(26, 26, 26, 0.15)';
+            // 先绘制填充
+            // 顶框
+            ctx.fillRect(tx(-outerW / 2), ty(outerH / 2), sv(outerW), sv(fsTop));
+            // 底框
+            ctx.fillRect(tx(-outerW / 2), ty(-outerH / 2 + fsBottom), sv(outerW), sv(fsBottom));
+            // 左框
+            ctx.fillRect(tx(-outerW / 2), ty(outerH / 2 - fsTop), sv(fsLeft), sv(outerH - fsTop - fsBottom));
+            // 右框
+            ctx.fillRect(tx(outerW / 2 - fsRight), ty(outerH / 2 - fsTop), sv(fsRight), sv(outerH - fsTop - fsBottom));
+            
+            // 最后绘制一个完整的外框线条
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(tx(-outerW / 2), ty(outerH / 2), sv(outerW), sv(outerH));
+        }
 
         ctx.fillStyle = COLORS.mainFill;
         ctx.fillRect(tx(innerX), ty(innerY), sv(w), sv(h));
@@ -415,7 +430,23 @@ var Drawing = (function() {
         ctx.lineWidth = isSurface ? 3 : 1.5;
         ctx.strokeRect(tx(0), ty(h / 2), sv(d), sv(h));
 
-        if (fs > 0) {
+        // 明装壁龛的外框（侧视图）
+        if (isSurface) {
+            ctx.fillStyle = COLORS.frameFill;
+            ctx.strokeStyle = COLORS.frame;
+            ctx.lineWidth = 1.5;
+            ctx.fillRect(tx(0), ty(h / 2 + fsTop), sv(wallThick), sv(fsTop));
+            ctx.strokeRect(tx(0), ty(h / 2 + fsTop), sv(wallThick), sv(fsTop));
+            ctx.fillRect(tx(0), ty(h / 2 + fsTop), sv(fdTop), sv(wallThick));
+            ctx.strokeRect(tx(0), ty(h / 2 + fsTop), sv(fdTop), sv(wallThick));
+
+            ctx.fillStyle = COLORS.frameFill;
+            ctx.strokeStyle = COLORS.frame;
+            ctx.fillRect(tx(0), ty(-h / 2), sv(wallThick), sv(fsBottom));
+            ctx.strokeRect(tx(0), ty(-h / 2), sv(wallThick), sv(fsBottom));
+            ctx.fillRect(tx(0), ty(-h / 2 - fsBottom + wallThick), sv(fdBottom), sv(wallThick));
+            ctx.strokeRect(tx(0), ty(-h / 2 - fsBottom + wallThick), sv(fdBottom), sv(wallThick));
+        } else if (fs > 0) {
             ctx.fillStyle = COLORS.frameFill;
             ctx.strokeStyle = COLORS.frame;
             ctx.lineWidth = 1.5;
