@@ -138,6 +138,45 @@ var Model3D = (function() {
         this.innerBoxGroup.add(makeBox(innerWallThick, ih, d, -iw / 2, 0, 0, leftWallMat));
         this.innerBoxGroup.add(makeBox(innerWallThick, ih, d, iw / 2, 0, 0, rightWallMat));
 
+        // 绘制孔洞
+        if (params.holes && params.holes.length > 0) {
+            var holeMat = new THREE.MeshStandardMaterial({ 
+                color: 0xff0000, 
+                roughness: 0.5, 
+                metalness: 0.0,
+                transparent: true,
+                opacity: 0.8
+            });
+            params.holes.forEach(function(hole) {
+                var holeMesh;
+                if (hole.type === 'circle') {
+                    var holeGeo = new THREE.CylinderGeometry(hole.diameter / 2, hole.diameter / 2, innerWallThick + 2, 32);
+                    holeMesh = new THREE.Mesh(holeGeo, holeMat);
+                } else {
+                    var holeGeo = new THREE.BoxGeometry(hole.length, hole.width, innerWallThick + 2);
+                    holeMesh = new THREE.Mesh(holeGeo, holeMat);
+                }
+                
+                // 根据位置设置孔的位置和旋转
+                if (hole.position === 'back') {
+                    holeMesh.position.set(hole.offsetX - iw / 2, ih / 2 - hole.offsetY, -d / 2);
+                    holeMesh.rotation.x = Math.PI / 2;
+                } else if (hole.position === 'top') {
+                    holeMesh.position.set(hole.offsetX - iw / 2, ih / 2, -d / 2 + hole.offsetY);
+                } else if (hole.position === 'bottom') {
+                    holeMesh.position.set(hole.offsetX - iw / 2, -ih / 2, -d / 2 + hole.offsetY);
+                } else if (hole.position === 'left') {
+                    holeMesh.position.set(-iw / 2, ih / 2 - hole.offsetY, -d / 2 + hole.offsetX);
+                    holeMesh.rotation.z = Math.PI / 2;
+                } else if (hole.position === 'right') {
+                    holeMesh.position.set(iw / 2, ih / 2 - hole.offsetY, -d / 2 + hole.offsetX);
+                    holeMesh.rotation.z = Math.PI / 2;
+                }
+                
+                self.innerBoxGroup.add(holeMesh);
+            });
+        }
+
         // Layer boards - each with different debug color
         var layerColors = [0x00ff88, 0x00ccff, 0xff66cc, 0xffcc00, 0x66ff00, 0xff6666];
         var accum = 0;
