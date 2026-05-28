@@ -367,3 +367,8 @@ input:checked + .slider:before {
 .hole-item .hole-delete:hover {
     background: rgba(255, 107, 107, 0.2);
 }
+
+.hole-item.selected {
+    border-color: #4fc3f7;
+    background: rgba(79, 195, 247, 0.15);
+}
