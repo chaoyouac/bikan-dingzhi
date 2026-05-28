@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>壁龛定制设计器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 标签页 -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="embedded">嵌入式壁龛</button>
+            <button class="tab-btn" data-tab="surface">明装壁龛</button>
+        </div>
+
+        <!-- 参数设置 -->
+        <div class="panel-input">
+            <h2>参数设置</h2>
+            <div class="input-row">
+                <div class="input-group"><label>宽度:</label><input type="number" id="width" value="300" min="100" max="2000" step="1"><span class="unit">mm</span></div>
+                <div class="input-group"><label>深度:</label><input type="number" id="depth" value="125" min="50" max="1000" step="1"><span class="unit">mm</span></div>
+                <div class="input-group"><label>层数:</label><input type="number" id="layers" value="3" min="1" max="10" step="1"></div>
+                <div class="input-group"><label>层板厚:</label><input type="number" id="layerThickness" value="10" min="1" max="50" step="1"><span class="unit">mm</span></div>
+                <div class="input-group outer-frame-inputs">
+                    <label>外框模式:</label>
+                    <select id="outerFrameMode" class="select-input">
+                        <option value="uniform">统一</option>
+                        <option value="separate">分开</option>
+                    </select>
+                </div>
+                <div class="input-group outer-frame-inputs uniform-frame-inputs">
+                    <label>外框:</label><input type="number" id="outerFrameSize" value="10" min="1" max="200" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs uniform-frame-inputs">
+                    <label>外框深:</label><input type="number" id="outerFrameDepth" value="5" min="1" max="500" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>上边:</label><input type="number" id="outerFrameTop" value="10" min="1" max="200" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>下边:</label><input type="number" id="outerFrameBottom" value="10" min="1" max="200" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>左边:</label><input type="number" id="outerFrameLeft" value="10" min="1" max="200" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>右边:</label><input type="number" id="outerFrameRight" value="10" min="1" max="200" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>上深:</label><input type="number" id="outerFrameTopDepth" value="5" min="1" max="500" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>下深:</label><input type="number" id="outerFrameBottomDepth" value="5" min="1" max="500" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>左深:</label><input type="number" id="outerFrameLeftDepth" value="5" min="1" max="500" step="1"><span class="unit">mm</span>
+                </div>
+                <div class="input-group outer-frame-inputs separate-frame-inputs" style="display:none;">
+                    <label>右深:</label><input type="number" id="outerFrameRightDepth" value="5" min="1" max="500" step="1"><span class="unit">mm</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group"><label>编号:</label><input type="text" id="drawingNo" value="" style="width:100px;"></div>
+                <div class="input-group toggle-group"><label>显示编号:</label><label class="switch"><input type="checkbox" id="showDrawingNo" checked><span class="slider"></span></label></div>
+                <div class="input-group"><label>颜色:</label><input type="text" id="color" value="" style="width:100px;"></div>
+                <div class="input-group toggle-group"><label>显示颜色:</label><label class="switch"><input type="checkbox" id="showColor" checked><span class="slider"></span></label></div>
+                <div class="input-group toggle-group"><label>是否带灯:</label><label class="switch"><input type="checkbox" id="hasLight"><span class="slider"></span></label></div>
+                <div class="input-group toggle-group"><label>显示带灯:</label><label class="switch"><input type="checkbox" id="showHasLight" checked><span class="slider"></span></label></div>
+                <div class="input-group"><label>日期:</label><input type="date" id="date" style="width:130px;"></div>
+                <div class="input-group toggle-group"><label>显示日期:</label><label class="switch"><input type="checkbox" id="showDate" checked><span class="slider"></span></label></div>
+                <div class="input-group"><label>字体大小:</label><input type="number" id="fontSize" value="20" min="10" max="30" step="1"><span class="unit">px</span></div>
+            </div>
+            <div class="input-row">
+                <div class="input-group"><label>备注:</label><textarea id="remark" rows="3" style="width:300px;"></textarea></div>
+                <div class="input-group toggle-group"><label>显示备注:</label><label class="switch"><input type="checkbox" id="showRemark" checked><span class="slider"></span></label></div>
+            </div>
+            <div class="input-row">
+                <button id="exportBtn" class="btn-primary">导出图纸</button>
+            </div>
+        </div>
+
+        <!-- 高度设置 -->
+        <div class="panel-input panel-height">
+            <h2>各层高度设置</h2>
+            <div class="input-row">
+                <div class="input-group"><label>总高度:</label><input type="number" id="totalHeight" value="900" min="100" max="3000" step="1"><span class="unit">mm</span></div>
+                <span id="layerHeightsContainer"></span>
+                <button id="resetBtn" class="btn-secondary">恢复默认</button>
+            </div>
+        </div>
+
+        <!-- 视图区域：2D视图 + 3D模型 -->
+        <div class="views-container">
+            <!-- 正面视图 + 侧面视图 (共用画布) -->
+            <div class="views-2d">
+                <div class="view-box">
+                    <div class="canvas-wrapper">
+                        <canvas id="combinedView" width="1600" height="560"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D 模型 -->
+            <div class="view-3d">
+                <h3>3D 模型 <span class="hint">(鼠标左键旋转 / 滚轮缩放 / 右键平移)</span></h3>
+                <div id="threeContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/three.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="js/model3d.js"></script>
+    <script src="js/drawing.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
