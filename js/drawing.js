@@ -229,35 +229,34 @@ var Drawing = (function() {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
 
-        if (!isSurface) {
-            var yTop = ty(outerH / 2) - dimOff;
-            ctx.beginPath();
-            ctx.moveTo(tx(-outerW / 2), yTop);
-            ctx.lineTo(tx(outerW / 2), yTop);
-            ctx.moveTo(tx(-outerW / 2), ty(outerH / 2));
-            ctx.lineTo(tx(-outerW / 2), yTop);
-            ctx.moveTo(tx(outerW / 2), ty(outerH / 2));
-            ctx.lineTo(tx(outerW / 2), yTop);
-            ctx.stroke();
-            ctx.fillText(outerW, (tx(-outerW / 2) + tx(outerW / 2)) / 2, yTop - 4);
+        // 嵌入式壁龛和明装壁龛都绘制最外面的边框尺寸线标
+        var yTop = ty(outerH / 2) - dimOff;
+        ctx.beginPath();
+        ctx.moveTo(tx(-outerW / 2), yTop);
+        ctx.lineTo(tx(outerW / 2), yTop);
+        ctx.moveTo(tx(-outerW / 2), ty(outerH / 2));
+        ctx.lineTo(tx(-outerW / 2), yTop);
+        ctx.moveTo(tx(outerW / 2), ty(outerH / 2));
+        ctx.lineTo(tx(outerW / 2), yTop);
+        ctx.stroke();
+        ctx.fillText(outerW, (tx(-outerW / 2) + tx(outerW / 2)) / 2, yTop - 4);
 
-            var xRight = tx(outerW / 2) + dimOff;
-            ctx.beginPath();
-            ctx.moveTo(xRight, ty(outerH / 2));
-            ctx.lineTo(xRight, ty(-outerH / 2));
-            ctx.moveTo(tx(outerW / 2), ty(outerH / 2));
-            ctx.lineTo(xRight, ty(outerH / 2));
-            ctx.moveTo(tx(outerW / 2), ty(-outerH / 2));
-            ctx.lineTo(xRight, ty(-outerH / 2));
-            ctx.stroke();
-            ctx.save();
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            ctx.translate(xRight + 12, (ty(outerH / 2) + ty(-outerH / 2)) / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText(outerH, 0, 0);
-            ctx.restore();
-        }
+        var xRight = tx(outerW / 2) + dimOff;
+        ctx.beginPath();
+        ctx.moveTo(xRight, ty(outerH / 2));
+        ctx.lineTo(xRight, ty(-outerH / 2));
+        ctx.moveTo(tx(outerW / 2), ty(outerH / 2));
+        ctx.lineTo(xRight, ty(outerH / 2));
+        ctx.moveTo(tx(outerW / 2), ty(-outerH / 2));
+        ctx.lineTo(xRight, ty(-outerH / 2));
+        ctx.stroke();
+        ctx.save();
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.translate(xRight + 12, (ty(outerH / 2) + ty(-outerH / 2)) / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(outerH, 0, 0);
+        ctx.restore();
 
         var yBot = ty(-outerH / 2) + dimOff;
         var xLeft = tx(-outerW / 2) - dimOff;
@@ -265,7 +264,8 @@ var Drawing = (function() {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
 
-        if (mode === 'separate') {
+        // 明装壁龛模式只显示外部边框尺寸，不显示内部尺寸
+        if (!isSurface && mode === 'separate') {
             ctx.beginPath();
             ctx.moveTo(xLeft, ty(outerH / 2));
             ctx.lineTo(xLeft, ty(innerY));
@@ -346,7 +346,7 @@ var Drawing = (function() {
             ctx.lineTo(tx(outerW / 2), yBot);
             ctx.stroke();
             ctx.fillText(fsRight, (tx(innerX + w) + tx(outerW / 2)) / 2, yBot + 6);
-        } else {
+        } else if (!isSurface) {
             ctx.beginPath();
             ctx.moveTo(xLeft, ty(innerY));
             ctx.lineTo(xLeft, ty(innerY - h));
