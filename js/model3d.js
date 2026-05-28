@@ -140,15 +140,45 @@ var Model3D = (function() {
 
         // 绘制孔洞 - 使用黑色描边，透明填充（挖掉效果）
         if (params.holes && params.holes.length > 0) {
+            var self = this;
             var holeEdgeMat = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
             params.holes.forEach(function(hole) {
                 var offsetX = hole.offsetX || 0;
                 var offsetY = hole.offsetY || 0;
-                var holeMesh, edgeMesh;
+                var holeMesh;
+                var position = hole.position;
+                
+                // 根据孔的位置确定穿透方向和厚度
+                var holeDepth = innerWallThick + 2;
+                var px = 0, py = 0, pz = 0;
+                var rx = 0, ry = 0, rz = 0;
+                
+                if (position === 'back') {
+                    // 背面：沿Z轴穿透
+                    px = offsetX; py = offsetY; pz = -d / 2;
+                    rx = Math.PI / 2;
+                } else if (position === 'top') {
+                    // 顶面：沿Y轴向下穿透
+                    px = offsetX; py = ih / 2; pz = -d / 2 + offsetY;
+                    rx = 0;
+                } else if (position === 'bottom') {
+                    // 底面：沿Y轴向上穿透
+                    px = offsetX; py = -ih / 2; pz = -d / 2 + offsetY;
+                    rx = 0;
+                } else if (position === 'left') {
+                    // 左面：沿X轴穿透
+                    px = -iw / 2; py = offsetY; pz = -d / 2 + offsetX;
+                    rz = Math.PI / 2;
+                } else if (position === 'right') {
+                    // 右面：沿X轴穿透
+                    px = iw / 2; py = offsetY; pz = -d / 2 + offsetX;
+                    rz = Math.PI / 2;
+                }
                 
                 if (hole.type === 'circle') {
                     var diameter = hole.diameter || 50;
-                    var holeGeo = new THREE.CylinderGeometry(diameter / 2, diameter / 2, innerWallThick + 2, 32);
+                    // CylinderGeometry默认沿Y轴，高度方向是Y轴
+                    var holeGeo = new THREE.CylinderGeometry(diameter / 2, diameter / 2, holeDepth, 32);
                     var holeMat = new THREE.MeshStandardMaterial({ 
                         color: 0xffffff, 
                         roughness: 0.5, 
@@ -160,12 +190,23 @@ var Model3D = (function() {
                     
                     // 黑色描边
                     var edgeGeo = new THREE.EdgesGeometry(holeGeo);
-                    edgeMesh = new THREE.LineSegments(edgeGeo, holeEdgeMat);
+                    var edgeMesh = new THREE.LineSegments(edgeGeo, holeEdgeMat);
                     holeMesh.add(edgeMesh);
                 } else {
                     var length = hole.length || 50;
                     var width = hole.width || 30;
-                    var holeGeo = new THREE.BoxGeometry(length, width, innerWallThick + 2);
+                    // BoxGeometry: 对于back面，厚度沿Z轴 (length=X, width=Y, depth=Z)
+                    // 对于top/bottom面，厚度沿Y轴
+                    // 对于left/right面，厚度沿X轴
+                    var holeGeo;
+                    if (position === 'back') {
+                        holeGeo = new THREE.BoxGeometry(length, width, holeDepth);
+                    } else if (position === 'top' || position === 'bottom') {
+                        holeGeo = new THREE.BoxGeometry(length, holeDepth, width);
+                    } else {
+                        // left/right
+                        holeGeo = new THREE.BoxGeometry(holeDepth, width, length);
+                    }
                     var holeMat = new THREE.MeshStandardMaterial({ 
                         color: 0xffffff, 
                         roughness: 0.5, 
@@ -177,27 +218,14 @@ var Model3D = (function() {
                     
                     // 黑色描边
                     var edgeGeo = new THREE.EdgesGeometry(holeGeo);
-                    edgeMesh = new THREE.LineSegments(edgeGeo, holeEdgeMat);
+                    var edgeMesh = new THREE.LineSegments(edgeGeo, holeEdgeMat);
                     holeMesh.add(edgeMesh);
                 }
                 
-                // 根据位置设置孔的位置和旋转
-                if (hole.position === 'back') {
-                    holeMesh.position.set(offsetX - iw / 2, ih / 2 - offsetY, -d / 2);
-                    holeMesh.rotation.x = Math.PI / 2;
-                } else if (hole.position === 'top') {
-                    holeMesh.position.set(offsetX - iw / 2, ih / 2, -d / 2 + offsetY);
-                } else if (hole.position === 'bottom') {
-                    holeMesh.position.set(offsetX - iw / 2, -ih / 2, -d / 2 + offsetY);
-                } else if (hole.position === 'left') {
-                    holeMesh.position.set(-iw / 2, ih / 2 - offsetY, -d / 2 + offsetX);
-                    holeMesh.rotation.z = Math.PI / 2;
-                } else if (hole.position === 'right') {
-                    holeMesh.position.set(iw / 2, ih / 2 - offsetY, -d / 2 + offsetX);
-                    holeMesh.rotation.z = Math.PI / 2;
-                }
+                holeMesh.position.set(px, py, pz);
+                holeMesh.rotation.set(rx, ry, rz);
                 
-                this.innerBoxGroup.add(holeMesh);
+                self.innerBoxGroup.add(holeMesh);
             });
         }
 
