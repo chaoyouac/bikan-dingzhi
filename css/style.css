@@ -320,3 +320,50 @@ input:checked + .slider:before {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #2a3a5c; border-radius: 3px; }
+
+/* 开孔设置面板样式 */
+.panel-holes {
+    background: #1a2744;
+}
+
+.hole-count {
+    font-size: 14px;
+    color: #90a4ae;
+    margin-left: 8px;
+}
+
+.hole-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.hole-item {
+    background: #0f3460;
+    border: 1px solid #2a3a5c;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hole-item .hole-info {
+    color: #4fc3f7;
+}
+
+.hole-item .hole-delete {
+    cursor: pointer;
+    color: #ff6b6b;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+.hole-item .hole-delete:hover {
+    background: rgba(255, 107, 107, 0.2);
+}
