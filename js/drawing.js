@@ -142,7 +142,7 @@ var Drawing = (function() {
         function ty(y) { return offsetY + (outerH / 2 - y) * PIXELS_PER_MM; }
         function sv(v) { return v * PIXELS_PER_MM; }
 
-        if (!isSurface) {
+        if (fs > 0) {
             ctx.fillStyle = 'rgba(26, 26, 26, 0.15)';
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = 3;
@@ -415,7 +415,7 @@ var Drawing = (function() {
         ctx.lineWidth = isSurface ? 3 : 1.5;
         ctx.strokeRect(tx(0), ty(h / 2), sv(d), sv(h));
 
-        if (!isSurface) {
+        if (fs > 0) {
             ctx.fillStyle = COLORS.frameFill;
             ctx.strokeStyle = COLORS.frame;
             ctx.lineWidth = 1.5;
