@@ -138,42 +138,66 @@ var Model3D = (function() {
         this.innerBoxGroup.add(makeBox(innerWallThick, ih, d, -iw / 2, 0, 0, leftWallMat));
         this.innerBoxGroup.add(makeBox(innerWallThick, ih, d, iw / 2, 0, 0, rightWallMat));
 
-        // 绘制孔洞
+        // 绘制孔洞 - 使用黑色描边，透明填充（挖掉效果）
         if (params.holes && params.holes.length > 0) {
-            var holeMat = new THREE.MeshStandardMaterial({ 
-                color: 0xff0000, 
-                roughness: 0.5, 
-                metalness: 0.0,
-                transparent: true,
-                opacity: 0.8
-            });
+            var holeEdgeMat = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
             params.holes.forEach(function(hole) {
-                var holeMesh;
+                var offsetX = hole.offsetX || 0;
+                var offsetY = hole.offsetY || 0;
+                var holeMesh, edgeMesh;
+                
                 if (hole.type === 'circle') {
-                    var holeGeo = new THREE.CylinderGeometry(hole.diameter / 2, hole.diameter / 2, innerWallThick + 2, 32);
+                    var diameter = hole.diameter || 50;
+                    var holeGeo = new THREE.CylinderGeometry(diameter / 2, diameter / 2, innerWallThick + 2, 32);
+                    var holeMat = new THREE.MeshStandardMaterial({ 
+                        color: 0xffffff, 
+                        roughness: 0.5, 
+                        metalness: 0.0,
+                        transparent: true,
+                        opacity: 0.1
+                    });
                     holeMesh = new THREE.Mesh(holeGeo, holeMat);
+                    
+                    // 黑色描边
+                    var edgeGeo = new THREE.EdgesGeometry(holeGeo);
+                    edgeMesh = new THREE.LineSegments(edgeGeo, holeEdgeMat);
+                    holeMesh.add(edgeMesh);
                 } else {
-                    var holeGeo = new THREE.BoxGeometry(hole.length, hole.width, innerWallThick + 2);
+                    var length = hole.length || 50;
+                    var width = hole.width || 30;
+                    var holeGeo = new THREE.BoxGeometry(length, width, innerWallThick + 2);
+                    var holeMat = new THREE.MeshStandardMaterial({ 
+                        color: 0xffffff, 
+                        roughness: 0.5, 
+                        metalness: 0.0,
+                        transparent: true,
+                        opacity: 0.1
+                    });
                     holeMesh = new THREE.Mesh(holeGeo, holeMat);
+                    
+                    // 黑色描边
+                    var edgeGeo = new THREE.EdgesGeometry(holeGeo);
+                    edgeMesh = new THREE.LineSegments(edgeGeo, holeEdgeMat);
+                    holeMesh.add(edgeMesh);
                 }
                 
                 // 根据位置设置孔的位置和旋转
                 if (hole.position === 'back') {
-                    holeMesh.position.set(hole.offsetX - iw / 2, ih / 2 - hole.offsetY, -d / 2);
+                    holeMesh.position.set(offsetX - iw / 2, ih / 2 - offsetY, -d / 2);
                     holeMesh.rotation.x = Math.PI / 2;
                 } else if (hole.position === 'top') {
-                    holeMesh.position.set(hole.offsetX - iw / 2, ih / 2, -d / 2 + hole.offsetY);
+                    holeMesh.position.set(offsetX - iw / 2, ih / 2, -d / 2 + offsetY);
                 } else if (hole.position === 'bottom') {
-                    holeMesh.position.set(hole.offsetX - iw / 2, -ih / 2, -d / 2 + hole.offsetY);
+                    holeMesh.position.set(offsetX - iw / 2, -ih / 2, -d / 2 + offsetY);
                 } else if (hole.position === 'left') {
-                    holeMesh.position.set(-iw / 2, ih / 2 - hole.offsetY, -d / 2 + hole.offsetX);
+                    holeMesh.position.set(-iw / 2, ih / 2 - offsetY, -d / 2 + offsetX);
                     holeMesh.rotation.z = Math.PI / 2;
                 } else if (hole.position === 'right') {
-                    holeMesh.position.set(iw / 2, ih / 2 - hole.offsetY, -d / 2 + hole.offsetX);
+                    holeMesh.position.set(iw / 2, ih / 2 - offsetY, -d / 2 + offsetX);
                     holeMesh.rotation.z = Math.PI / 2;
                 }
                 
-                self.innerBoxGroup.add(holeMesh);
+                this.innerBoxGroup.add(holeMesh);
             });
         }
 
