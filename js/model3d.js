@@ -228,7 +228,7 @@ var Model3D = (function() {
         }
 
         // Outer frame (8 pieces, each with different debug color)
-        if (params.type !== 'surface') {
+        if (fs > 0) {
             var zFront = d / 2;
             var zTop = d / 2 - fdTop / 2;
             var zBottom = d / 2 - fdBottom / 2;
