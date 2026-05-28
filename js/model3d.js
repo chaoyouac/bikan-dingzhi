@@ -89,6 +89,7 @@ var Model3D = (function() {
         var heights = params.layerHeights || [];
         var wallThick = 1;
         var mode = params.outerFrameMode || 'uniform';
+        var isSurface = params.type === 'surface';
 
         var fsTop = mode === 'separate' ? (params.outerFrameTop || 0) : fs;
         var fsBottom = mode === 'separate' ? (params.outerFrameBottom || 0) : fs;
@@ -228,7 +229,8 @@ var Model3D = (function() {
         }
 
         // Outer frame (8 pieces, each with different debug color)
-        if (fs > 0) {
+        // 明装壁龛不显示外框
+        if (!isSurface && fs > 0) {
             var zFront = d / 2;
             var zTop = d / 2 - fdTop / 2;
             var zBottom = d / 2 - fdBottom / 2;
