@@ -21,9 +21,9 @@
         surface: {
             width: 300, depth: 125, totalHeight: 900, layers: 3, layerThickness: 10,
             outerFrameMode: 'uniform',
-            outerFrameSize: 0, outerFrameDepth: 0,
-            outerFrameTop: 0, outerFrameBottom: 0, outerFrameLeft: 0, outerFrameRight: 0,
-            outerFrameTopDepth: 0, outerFrameBottomDepth: 0, outerFrameLeftDepth: 0, outerFrameRightDepth: 0,
+            outerFrameSize: 10, outerFrameDepth: 10,
+            outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
+            outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
             hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
@@ -399,9 +399,9 @@
         tabState.surface = {
             width: 300, depth: 125, totalHeight: 900, layers: 3, layerThickness: 10,
             outerFrameMode: 'uniform',
-            outerFrameSize: 0, outerFrameDepth: 0,
-            outerFrameTop: 0, outerFrameBottom: 0, outerFrameLeft: 0, outerFrameRight: 0,
-            outerFrameTopDepth: 0, outerFrameBottomDepth: 0, outerFrameLeftDepth: 0, outerFrameRightDepth: 0,
+            outerFrameSize: 10, outerFrameDepth: 10,
+            outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
+            outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
             hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
