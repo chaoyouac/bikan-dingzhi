@@ -19,7 +19,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 5, outerFrameBottomDepth: 5, outerFrameLeftDepth: 5, outerFrameRightDepth: 5,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数3',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数4',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         },
         surface: {
@@ -29,7 +29,7 @@
             outerFrameTop: 10, outerFrameBottom: 10, outerFrameLeft: 10, outerFrameRight: 10,
             outerFrameTopDepth: 10, outerFrameBottomDepth: 10, outerFrameLeftDepth: 10, outerFrameRightDepth: 10,
             layerHeights: [300, 300, 300],
-            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数3',
+            hasLight: false, drawingNo: '', color: '', date: '', fontSize: 20, remark: '测试次数4',
             showDrawingNo: true, showColor: true, showHasLight: true, showDate: true, showRemark: true
         }
     };
@@ -394,7 +394,9 @@
         }
     }
 
-    // 开孔功能
+    // 开孔功能 - 新交互方式：先添加孔位，再实时编辑
+    var selectedHoleIndex = -1;
+
     function updateHoleTypeVisibility() {
         var holeType = document.getElementById('holeType').value;
         var circleInputs = document.querySelectorAll('.hole-size-circle');
@@ -408,20 +410,47 @@
         }
     }
 
+    function updateHoleInputsFromSelected() {
+        if (selectedHoleIndex >= 0 && selectedHoleIndex < holes.length) {
+            var hole = holes[selectedHoleIndex];
+            document.getElementById('holePosition').value = hole.position;
+            document.getElementById('holeType').value = hole.type;
+            document.getElementById('holeOffsetX').value = hole.offsetX;
+            document.getElementById('holeOffsetY').value = hole.offsetY;
+            if (hole.type === 'circle') {
+                document.getElementById('holeDiameter').value = hole.diameter || 50;
+            } else {
+                document.getElementById('holeLength').value = hole.length || 50;
+                document.getElementById('holeWidth').value = hole.width || 30;
+            }
+            updateHoleTypeVisibility();
+        }
+    }
+
     function updateHoleList() {
         var list = document.getElementById('holeList');
         var count = document.getElementById('holeCount');
         list.innerHTML = '';
         count.textContent = '(' + holes.length + '/' + MAX_HOLES + ')';
         
+        var posNames = { back: '背面', top: '上面', bottom: '下面', left: '左面', right: '右面' };
+        
         holes.forEach(function(hole, index) {
             var item = document.createElement('div');
-            item.className = 'hole-item';
+            item.className = 'hole-item' + (index === selectedHoleIndex ? ' selected' : '');
             var sizeText = hole.type === 'circle' 
-                ? '直径' + hole.diameter + 'mm' 
-                : '长' + hole.length + 'x宽' + hole.width + 'mm';
-            var posNames = { back: '背面', top: '上面', bottom: '下面', left: '左面', right: '右面' };
-            item.innerHTML = '<span class="hole-info">' + (index + 1) + '. ' + posNames[hole.position] + ' ' + sizeText + ' (X:' + hole.offsetX + ',Y:' + hole.offsetY + ')</span><span class="hole-delete" data-index="' + index + '">×</span>';
+                ? '直径' + (hole.diameter || 50) + 'mm' 
+                : '长' + (hole.length || 50) + 'x宽' + (hole.width || 30) + 'mm';
+            item.innerHTML = '<span class="hole-info">' + (index + 1) + '. ' + posNames[hole.position] + ' ' + sizeText + ' (X:' + (hole.offsetX || 0) + ',Y:' + (hole.offsetY || 0) + ')</span><span class="hole-delete" data-index="' + index + '">×</span>';
+            
+            // 点击选中孔
+            item.addEventListener('click', function(e) {
+                if (e.target.classList.contains('hole-delete')) return;
+                selectedHoleIndex = index;
+                updateHoleInputsFromSelected();
+                updateHoleList();
+            });
+            
             list.appendChild(item);
         });
 
@@ -430,8 +459,45 @@
             btn.addEventListener('click', function() {
                 var idx = parseInt(this.getAttribute('data-index'));
                 holes.splice(idx, 1);
+                if (selectedHoleIndex === idx) {
+                    selectedHoleIndex = -1;
+                } else if (selectedHoleIndex > idx) {
+                    selectedHoleIndex--;
+                }
                 updateHoleList();
                 updateAll();
+            });
+        });
+    }
+
+    // 实时更新选中的孔
+    function bindHoleInputEvents() {
+        var holeInputs = ['holePosition', 'holeType', 'holeDiameter', 'holeLength', 'holeWidth', 'holeOffsetX', 'holeOffsetY'];
+        holeInputs.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', function() {
+                if (selectedHoleIndex >= 0 && selectedHoleIndex < holes.length) {
+                    var hole = holes[selectedHoleIndex];
+                    hole.position = document.getElementById('holePosition').value;
+                    hole.type = document.getElementById('holeType').value;
+                    hole.offsetX = parseInt(document.getElementById('holeOffsetX').value) || 0;
+                    hole.offsetY = parseInt(document.getElementById('holeOffsetY').value) || 0;
+                    if (hole.type === 'circle') {
+                        hole.diameter = parseInt(document.getElementById('holeDiameter').value) || 50;
+                        delete hole.length;
+                        delete hole.width;
+                    } else {
+                        hole.length = parseInt(document.getElementById('holeLength').value) || 50;
+                        hole.width = parseInt(document.getElementById('holeWidth').value) || 30;
+                        delete hole.diameter;
+                    }
+                    updateHoleList();
+                    updateAll();
+                }
+                if (id === 'holeType') {
+                    updateHoleTypeVisibility();
+                }
             });
         });
     }
@@ -447,19 +513,23 @@
         var hole = {
             position: document.getElementById('holePosition').value,
             type: holeType,
-            offsetX: parseInt(document.getElementById('holeOffsetX').value) || 0,
-            offsetY: parseInt(document.getElementById('holeOffsetY').value) || 0
+            offsetX: 0,
+            offsetY: 0
         };
         if (holeType === 'circle') {
-            hole.diameter = parseInt(document.getElementById('holeDiameter').value) || 50;
+            hole.diameter = 50;
         } else {
-            hole.length = parseInt(document.getElementById('holeLength').value) || 50;
-            hole.width = parseInt(document.getElementById('holeWidth').value) || 30;
+            hole.length = 50;
+            hole.width = 30;
         }
         holes.push(hole);
+        selectedHoleIndex = holes.length - 1;
+        updateHoleInputsFromSelected();
         updateHoleList();
         updateAll();
     });
+
+    bindHoleInputEvents();
 
     document.getElementById('exportBtn').addEventListener('click', function() {
         window.exportDrawings();
